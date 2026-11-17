@@ -1,0 +1,53 @@
+{
+ "bias_by_test_month": [
+  {
+   "fold": "D1",
+   "month": 5,
+   "months_ahead": 1,
+   "median_log_actual_over_pred": 0.005110227766020221
+  },
+  {
+   "fold": "D1",
+   "month": 6,
+   "months_ahead": 2,
+   "median_log_actual_over_pred": 0.030130763301415404
+  },
+  {
+   "fold": "D2",
+   "month": 7,
+   "months_ahead": 1,
+   "median_log_actual_over_pred": 0.007601241927078333
+  },
+  {
+   "fold": "D2",
+   "month": 8,
+   "months_ahead": 2,
+   "median_log_actual_over_pred": 0.02597527779215291
+  },
+  {
+   "fold": "FINAL",
+   "month": 9,
+   "months_ahead": 1,
+   "median_log_actual_over_pred": 0.04897324083468339
+  },
+  {
+   "fold": "FINAL",
+   "month": 10,
+   "months_ahead": 2,
+   "median_log_actual_over_pred": 0.04178056477064422
+  }
+ ],
+ "month_fixed_effects_log": {
+  "1": 0.0,
+  "2": 0.004284502617542898,
+  "3": 0.03069426972361172,
+  "4": 0.019418950625549755,
+  "5": 0.032260812730892124,
+  "6": 0.05837048730481053,
+  "7": 0.03854267965406822,
+  "8": 0.035162285872029395,
+  "9": 0.0633326870746278,
+  "10": 0.057003390647840234
+ },
+ "log_market_index_coef_with_month_fe": 0.13191451534062434
+}

@@ -1,0 +1,400 @@
+{
+ "n_estimators": 4449,
+ "validation_pred_quantiles": {
+  "0.0": 199.83,
+  "0.01": 336.67,
+  "0.25": 1248.92,
+  "0.5": 1993.74,
+  "0.75": 3273.68,
+  "0.99": 5650.71,
+  "1.0": 6681.61
+ },
+ "sep_oct_actual_quantiles": {
+  "0.0": 104.38,
+  "0.01": 327.9,
+  "0.25": 1243.06,
+  "0.5": 2044.32,
+  "0.75": 3335.73,
+  "0.99": 6030.01,
+  "1.0": 20361.89
+ },
+ "validation_pred_mean": 2305.02671,
+ "sep_oct_actual_mean": 2392.4501690643706,
+ "december": [
+  {
+   "date": "2025-12-01",
+   "dow": "Mon",
+   "market_index_used": 0.8349189949748743,
+   "predicted_rate": 807.8424807980947,
+   "predicted_rate_mi_held_constant": 813.0716974178946
+  },
+  {
+   "date": "2025-12-02",
+   "dow": "Tue",
+   "market_index_used": 0.9146795283018868,
+   "predicted_rate": 810.6907887715587,
+   "predicted_rate_mi_held_constant": 812.4050664042477
+  },
+  {
+   "date": "2025-12-03",
+   "dow": "Wed",
+   "market_index_used": 0.9940630622009569,
+   "predicted_rate": 820.3392757454064,
+   "predicted_rate_mi_held_constant": 812.0964989469378
+  },
+  {
+   "date": "2025-12-04",
+   "dow": "Thu",
+   "market_index_used": 1.0240208080808082,
+   "predicted_rate": 822.898758349747,
+   "predicted_rate_mi_held_constant": 812.0122164757769
+  },
+  {
+   "date": "2025-12-05",
+   "dow": "Fri",
+   "market_index_used": 0.9751201104972375,
+   "predicted_rate": 818.2041544970692,
+   "predicted_rate_mi_held_constant": 812.2842885712711
+  },
+  {
+   "date": "2025-12-06",
+   "dow": "Sat",
+   "market_index_used": 0.8891544059405941,
+   "predicted_rate": 808.3846234849502,
+   "predicted_rate_mi_held_constant": 812.6209248658656
+  },
+  {
+   "date": "2025-12-07",
+   "dow": "Sun",
+   "market_index_used": 0.8305901538461539,
+   "predicted_rate": 804.133666195254,
+   "predicted_rate_mi_held_constant": 813.0014373492204
+  },
+  {
+   "date": "2025-12-08",
+   "dow": "Mon",
+   "market_index_used": 0.84011,
+   "predicted_rate": 805.9771732261462,
+   "predicted_rate_mi_held_constant": 813.0716974178946
+  },
+  {
+   "date": "2025-12-09",
+   "dow": "Tue",
+   "market_index_used": 0.9172634803921568,
+   "predicted_rate": 810.7256736462829,
+   "predicted_rate_mi_held_constant": 812.4050664042477
+  },
+  {
+   "date": "2025-12-10",
+   "dow": "Wed",
+   "market_index_used": 0.9989070984455959,
+   "predicted_rate": 821.6041265787737,
+   "predicted_rate_mi_held_constant": 812.0964989469378
+  },
+  {
+   "date": "2025-12-11",
+   "dow": "Thu",
+   "market_index_used": 1.027247,
+   "predicted_rate": 822.8186503157615,
+   "predicted_rate_mi_held_constant": 812.0122164757769
+  },
+  {
+   "date": "2025-12-12",
+   "dow": "Fri",
+   "market_index_used": 0.9814481773399015,
+   "predicted_rate": 818.7864288542546,
+   "predicted_rate_mi_held_constant": 812.2842885712711
+  },
+  {
+   "date": "2025-12-13",
+   "dow": "Sat",
+   "market_index_used": 0.8965907727272727,
+   "predicted_rate": 808.581156058517,
+   "predicted_rate_mi_held_constant": 812.6209248658656
+  },
+  {
+   "date": "2025-12-14",
+   "dow": "Sun",
+   "market_index_used": 0.8382462359550562,
+   "predicted_rate": 805.8427106731447,
+   "predicted_rate_mi_held_constant": 813.0014373492204
+  },
+  {
+   "date": "2025-12-15",
+   "dow": "Mon",
+   "market_index_used": 0.8478406770833334,
+   "predicted_rate": 807.507719509821,
+   "predicted_rate_mi_held_constant": 813.0716974178946
+  },
+  {
+   "date": "2025-12-16",
+   "dow": "Tue",
+   "market_index_used": 0.9241924878048781,
+   "predicted_rate": 810.6123491976949,
+   "predicted_rate_mi_held_constant": 812.4050664042477
+  },
+  {
+   "date": "2025-12-17",
+   "dow": "Wed",
+   "market_index_used": 1.0021208955223881,
+   "predicted_rate": 821.9003710516887,
+   "predicted_rate_mi_held_constant": 812.0964989469378
+  },
+  {
+   "date": "2025-12-18",
+   "dow": "Thu",
+   "market_index_used": 1.0339775595238094,
+   "predicted_rate": 823.2809423889124,
+   "predicted_rate_mi_held_constant": 812.0122164757769
+  },
+  {
+   "date": "2025-12-19",
+   "dow": "Fri",
+   "market_index_used": 0.9886736199095023,
+   "predicted_rate": 819.1328969493225,
+   "predicted_rate_mi_held_constant": 812.2842885712711
+  },
+  {
+   "date": "2025-12-20",
+   "dow": "Sat",
+   "market_index_used": 0.9018281081081081,
+   "predicted_rate": 809.9268778091144,
+   "predicted_rate_mi_held_constant": 812.6209248658656
+  },
+  {
+   "date": "2025-12-21",
+   "dow": "Sun",
+   "market_index_used": 0.8441232663316582,
+   "predicted_rate": 809.6703341460127,
+   "predicted_rate_mi_held_constant": 813.0014373492204
+  },
+  {
+   "date": "2025-12-22",
+   "dow": "Mon",
+   "market_index_used": 0.8599071739130434,
+   "predicted_rate": 807.9746774696803,
+   "predicted_rate_mi_held_constant": 813.0716974178946
+  },
+  {
+   "date": "2025-12-23",
+   "dow": "Tue",
+   "market_index_used": 0.9303662303664921,
+   "predicted_rate": 813.1469663380313,
+   "predicted_rate_mi_held_constant": 812.4050664042477
+  },
+  {
+   "date": "2025-12-24",
+   "dow": "Wed",
+   "market_index_used": 1.0147318285714286,
+   "predicted_rate": 823.2122895825771,
+   "predicted_rate_mi_held_constant": 812.0964989469378
+  },
+  {
+   "date": "2025-12-25",
+   "dow": "Thu",
+   "market_index_used": 1.0445469897959183,
+   "predicted_rate": 823.9721322239637,
+   "predicted_rate_mi_held_constant": 812.0122164757769
+  },
+  {
+   "date": "2025-12-26",
+   "dow": "Fri",
+   "market_index_used": 0.9971956451612902,
+   "predicted_rate": 821.4628577867588,
+   "predicted_rate_mi_held_constant": 812.2842885712711
+  },
+  {
+   "date": "2025-12-27",
+   "dow": "Sat",
+   "market_index_used": 0.9145282272727273,
+   "predicted_rate": 810.9013337990689,
+   "predicted_rate_mi_held_constant": 812.6209248658656
+  },
+  {
+   "date": "2025-12-28",
+   "dow": "Sun",
+   "market_index_used": 0.8580225,
+   "predicted_rate": 807.8406662147074,
+   "predicted_rate_mi_held_constant": 813.0014373492204
+  },
+  {
+   "date": "2025-12-29",
+   "dow": "Mon",
+   "market_index_used": 0.8695522751322752,
+   "predicted_rate": 810.3039018106173,
+   "predicted_rate_mi_held_constant": 813.0716974178946
+  },
+  {
+   "date": "2025-12-30",
+   "dow": "Tue",
+   "market_index_used": 0.944019068627451,
+   "predicted_rate": 811.2164897797893,
+   "predicted_rate_mi_held_constant": 812.4050664042477
+  },
+  {
+   "date": "2025-12-31",
+   "dow": "Wed",
+   "market_index_used": 1.0272512041884818,
+   "predicted_rate": 822.9041763998052,
+   "predicted_rate_mi_held_constant": 812.0964989469378
+  }
+ ],
+ "december_range": [
+  804.133666195254,
+  823.9721322239637
+ ],
+ "december_range_mi_constant": [
+  812.0122164757769,
+  813.0716974178946
+ ],
+ "corr_pred_vs_market_index": 0.9697944402475525,
+ "historical_lex_fw_dry_van": [
+  {
+   "date": "2025-01-05",
+   "distance": 358.3,
+   "weight": 22567.0,
+   "market_index": 0.79554,
+   "posted_rate": 757.93
+  },
+  {
+   "date": "2025-01-10",
+   "distance": 358.2,
+   "weight": 31556.0,
+   "market_index": 0.87356,
+   "posted_rate": 788.08
+  },
+  {
+   "date": "2025-01-18",
+   "distance": 362.1,
+   "weight": 27842.0,
+   "market_index": 0.84023,
+   "posted_rate": 768.22
+  },
+  {
+   "date": "2025-01-25",
+   "distance": 357.5,
+   "weight": 37102.0,
+   "market_index": 0.92241,
+   "posted_rate": 807.89
+  },
+  {
+   "date": "2025-02-12",
+   "distance": 376.8,
+   "weight": 41021.0,
+   "market_index": 1.04296,
+   "posted_rate": 870.22
+  },
+  {
+   "date": "2025-02-23",
+   "distance": 355.1,
+   "weight": 27601.0,
+   "market_index": 0.9594,
+   "posted_rate": 791.25
+  },
+  {
+   "date": "2025-03-08",
+   "distance": 359.9,
+   "weight": 24178.0,
+   "market_index": 1.0178,
+   "posted_rate": 791.31
+  },
+  {
+   "date": "2025-03-16",
+   "distance": 367.6,
+   "weight": 16195.0,
+   "market_index": 0.99336,
+   "posted_rate": 806.54
+  },
+  {
+   "date": "2025-03-19",
+   "distance": 363.1,
+   "weight": 27600.0,
+   "market_index": 1.14812,
+   "posted_rate": 810.96
+  },
+  {
+   "date": "2025-04-01",
+   "distance": 362.8,
+   "weight": 25383.0,
+   "market_index": 1.07886,
+   "posted_rate": 786.5
+  },
+  {
+   "date": "2025-04-11",
+   "distance": 360.5,
+   "weight": 40999.0,
+   "market_index": 1.17447,
+   "posted_rate": 849.17
+  },
+  {
+   "date": "2025-04-28",
+   "distance": 366.6,
+   "weight": 23287.0,
+   "market_index": 1.22597,
+   "posted_rate": 848.05
+  },
+  {
+   "date": "2025-05-22",
+   "distance": 372.9,
+   "weight": 35578.0,
+   "market_index": 1.40617,
+   "posted_rate": 896.63
+  },
+  {
+   "date": "2025-05-29",
+   "distance": 378.8,
+   "weight": 39179.0,
+   "market_index": 1.38372,
+   "posted_rate": 934.37
+  },
+  {
+   "date": "2025-06-15",
+   "distance": 359.7,
+   "weight": 19949.0,
+   "market_index": 1.23523,
+   "posted_rate": 824.39
+  },
+  {
+   "date": "2025-07-15",
+   "distance": 362.5,
+   "weight": 36951.0,
+   "market_index": 1.26556,
+   "posted_rate": 880.63
+  },
+  {
+   "date": "2025-08-13",
+   "distance": 360.8,
+   "weight": 22007.0,
+   "market_index": 1.06957,
+   "posted_rate": 796.71
+  },
+  {
+   "date": "2025-09-15",
+   "distance": 350.9,
+   "weight": 22972.0,
+   "market_index": 0.81021,
+   "posted_rate": 778.24
+  },
+  {
+   "date": "2025-10-01",
+   "distance": 371.4,
+   "weight": 26829.0,
+   "market_index": 0.90458,
+   "posted_rate": 841.42
+  },
+  {
+   "date": "2025-10-26",
+   "distance": 363.0,
+   "weight": 17917.0,
+   "market_index": 0.83786,
+   "posted_rate": 796.48
+  },
+  {
+   "date": "2025-10-30",
+   "distance": 370.3,
+   "weight": 26358.0,
+   "market_index": 1.01336,
+   "posted_rate": 864.61
+  }
+ ]
+}
