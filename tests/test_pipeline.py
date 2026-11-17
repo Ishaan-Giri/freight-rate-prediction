@@ -64,3 +64,45 @@ def test_preprocessor_uses_training_statistics_only(train):
     out = prep.transform(te)
     assert out["weight_clean"].notna().all() and (out["weight_clean"] > 0).all()
     assert out["mi"].notna().all()
+
+
+# ---- early stopping / outlier filter hygiene (regression tests for code-review finding) ----
+from freight.models import Pipeline, default_config  # noqa: E402
+
+
+def _small_cfg():
+    cfg = default_config("lgbm")
+    cfg["filter_threshold"] = 0.5
+    cfg["lgbm"].update({"max_rounds": 30, "objective": "huber", "alpha": 0.1})
+    return cfg
+
+
+def test_early_stopping_month_is_unseen_and_unfiltered(train):
+    window = train[train["date"] < "2025-04-01"]
+    pipe = Pipeline(_small_cfg())
+    seen = []
+    original = pipe._prepare
+    pipe._prepare = lambda df: (seen.append(df["date"].max()), original(df))[1]
+    pipe.fit(window)
+    last_month_rows = int((window["date"] >= "2025-03-01").sum())
+    assert pipe.es_rows_ == last_month_rows          # every early-stopping row kept
+    assert seen[0] < pd.Timestamp("2025-03-01")       # inner prep/filter never saw the ES month
+    assert seen[1] == window["date"].max()            # final refit uses the full window
+
+
+def test_filter_uses_out_of_fold_residuals(train):
+    window = train[train["date"] < "2025-03-01"].copy()
+    tr = Preprocessor("abs").fit(window).transform(window)
+    ylog = np.log(window[C.TARGET].values)
+    r1 = Pipeline._oof_residuals(tr, ylog, 0.5)
+    i, delta = 123, 0.3
+    bumped = ylog.copy()
+    bumped[i] += delta
+    r2 = Pipeline._oof_residuals(tr, bumped, 0.5)
+    # Out-of-fold: the row's own fitted value ignores its label, so its residual moves by exactly delta
+    # (an in-sample fit would move it by delta * (1 - leverage)).
+    assert abs((r2[i] - r1[i]) - delta) < 1e-10
+    # Rows on the same date share the fold, so their fits never see the changed label.
+    same = (tr["date"] == tr["date"].iloc[i]).values
+    same[i] = False
+    assert np.allclose(r1[same], r2[same], atol=1e-12)

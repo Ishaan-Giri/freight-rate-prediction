@@ -1,0 +1,16 @@
+== Round 2: fold-fitted trend
+v1_blend_w0.75                               primary   108.85  dec   108.95  aug   112.96  unseen   123.38  mape 0.0462  n_est [3918, 4980]  (41s)
+v1+trend                                     primary   125.96  dec   125.97  aug   180.23  unseen   141.27  mape 0.0549  n_est [3017, 4982]  (43s)
+   -> reject v1+trend vs v1_blend_w0.75: primary +15.72%, secondary_ok=False
+lgbm_only                                    primary   109.54  dec   109.61  aug   112.51  unseen   126.14  mape 0.0465  n_est [3918, 4980]  (36s)
+lgbm_only+trend                              primary   125.74  dec   125.66  aug   179.61  unseen   140.77  mape 0.0548  n_est [3017, 4982]  (36s)
+linear_only                                  primary   120.15  dec   120.34  aug   123.28  unseen   128.43  mape 0.0524  n_est [None, None]  (3s)
+linear_only+trend                            primary   136.29  dec   136.54  aug   183.60  unseen   151.27  mape 0.0604  n_est [None, None]  (6s)
+== Round 2: recency weighting
+v1_blend_w0.75+halflife60                    primary   108.71  dec   108.80  aug   110.15  unseen   123.23  mape 0.0462  n_est [2632, 4691]  (34s)
+v1_blend_w0.75+halflife120                   primary   108.77  dec   108.84  aug   111.46  unseen   123.19  mape 0.0462  n_est [2634, 4691]  (34s)
+   -> reject v1_blend_w0.75+halflife60 vs v1_blend_w0.75: primary -0.13%, secondary_ok=True
+v1_blend_w0.75_w0.5                          primary   110.54  dec   110.64  aug   114.81  unseen   122.94  mape 0.0471  n_est [3918, 4980]  (39s)
+v1_blend_w0.75_w1.0                          primary   109.54  dec   109.61  aug   112.51  unseen   126.14  mape 0.0465  n_est [3918, 4980]  (39s)
+
+SELECTED (v2): v1_blend_w0.75

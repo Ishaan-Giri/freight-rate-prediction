@@ -24,7 +24,7 @@ The held-out result is worse than development. The cause is an upward rate-level
 - **Selected model.** A geometric blend: 0.75 × LightGBM (Huber loss on log rate, large-residual rows filtered from training, 15 leaves) plus 0.25 × log-linear regression. All preprocessing is fitted inside each training fold.
 
 ## Setup
-Python 3.10+.
+Python 3.12+ (the pinned numpy 2.5 and SciPy 1.18 require it; developed on 3.12.3).
 ```bash
 python -m venv .venv
 .venv/bin/pip install -r requirements.txt

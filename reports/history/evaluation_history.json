@@ -1,0 +1,21 @@
+{
+ "entries": [
+  {
+   "step": 1,
+   "what": "Round-1 selection on dev folds, pipeline frozen and committed, Sep-Oct evaluated once (v1).",
+   "selected": "blend_w0.75",
+   "dev_primary_mae": 108.84605209856062,
+   "heldout_mae": 163.76358572419105,
+   "heldout_median_ape": 0.04425813236305887,
+   "lane_median_reference_mae": 162.4277294197025
+  },
+  {
+   "step": 2,
+   "what": "After seeing the v1 Sep-Oct under-prediction: exploratory dev-fold-only experiments (linear trend, recency weighting). Neither met the adoption rule; pipeline unchanged. Sep-Oct is therefore not independent evidence for anything decided from this point on."
+  },
+  {
+   "step": 3,
+   "what": "External code review found the inner early-stopping month was contaminated: preprocessing and the residual filter were fitted on the whole training window (including the early-stopping month) and early-stopping rows were filtered; the filter also used in-sample rather than out-of-fold residuals. Fixed; dev selection, freeze and Sep-Oct evaluation re-run with unchanged rules. Pre-fix outputs archived in reports/history/."
+  }
+ ]
+}

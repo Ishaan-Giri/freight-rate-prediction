@@ -1,50 +1,50 @@
 == Stage 1: baselines
 B0_lane_median                               primary   203.70  dec   203.70  aug   154.97  unseen   178.69  mape 0.0835  n_est [None, None]  (1s)
 B1_loglinear_ols                             primary   122.72  dec   122.90  aug   124.16  unseen   131.25  mape 0.0531  n_est [None, None]  (1s)
-B1_loglinear_huber                           primary   120.26  dec   120.45  aug   123.30  unseen   128.44  mape 0.0524  n_est [None, None]  (4s)
-B1_loglinear_ols_filter0.5                   primary   120.15  dec   120.34  aug   123.28  unseen   128.43  mape 0.0524  n_est [None, None]  (3s)
-B1_loglinear_ols_filter0.3                   primary   120.15  dec   120.34  aug   123.28  unseen   128.43  mape 0.0524  n_est [None, None]  (3s)
+B1_loglinear_huber                           primary   120.26  dec   120.45  aug   123.30  unseen   128.44  mape 0.0524  n_est [None, None]  (3s)
+B1_loglinear_ols_filter0.5                   primary   120.15  dec   120.34  aug   123.28  unseen   128.43  mape 0.0524  n_est [None, None]  (1s)
+B1_loglinear_ols_filter0.3                   primary   120.15  dec   120.34  aug   123.28  unseen   128.43  mape 0.0524  n_est [None, None]  (1s)
    best linear: B1_loglinear_ols_filter0.5
 == Stage 2: LightGBM objective x training-data variant
-M1_l2_filterNone                             primary   130.74  dec   130.76  aug   122.49  unseen   146.60  mape 0.0544  n_est [168, 282]  (4s)
-M1_l2_filter0.5                              primary   120.09  dec   120.09  aug   118.75  unseen   134.56  mape 0.0498  n_est [184, 1203]  (11s)
-M1_l2_filter0.3                              primary   120.09  dec   120.09  aug   118.75  unseen   134.56  mape 0.0498  n_est [184, 1203]  (11s)
-M1_l1_filterNone                             primary   117.05  dec   117.09  aug   119.26  unseen   131.93  mape 0.0490  n_est [285, 4940]  (33s)
-M1_l1_filter0.5                              primary   118.82  dec   118.86  aug   118.88  unseen   133.96  mape 0.0497  n_est [250, 2757]  (21s)
-M1_l1_filter0.3                              primary   118.82  dec   118.86  aug   118.88  unseen   133.96  mape 0.0497  n_est [250, 2757]  (22s)
-M1_huber_filterNone                          primary   112.53  dec   112.68  aug   117.42  unseen   128.26  mape 0.0477  n_est [740, 1185]  (12s)
-M1_huber_filter0.5                           primary   112.09  dec   112.20  aug   117.66  unseen   128.00  mape 0.0474  n_est [760, 2200]  (19s)
-M1_huber_filter0.3                           primary   112.09  dec   112.20  aug   117.66  unseen   128.00  mape 0.0474  n_est [760, 2200]  (19s)
+M1_l2_filterNone                             primary   129.90  dec   129.94  aug   122.37  unseen   145.48  mape 0.0542  n_est [175, 275]  (4s)
+M1_l2_filter0.5                              primary   120.75  dec   120.76  aug   118.73  unseen   135.40  mape 0.0500  n_est [180, 1553]  (10s)
+M1_l2_filter0.3                              primary   120.75  dec   120.76  aug   118.73  unseen   135.40  mape 0.0500  n_est [180, 1553]  (10s)
+M1_l1_filterNone                             primary   118.51  dec   118.54  aug   119.27  unseen   133.37  mape 0.0496  n_est [259, 4968]  (32s)
+M1_l1_filter0.5                              primary   117.19  dec   117.23  aug   118.91  unseen   132.26  mape 0.0491  n_est [278, 4439]  (30s)
+M1_l1_filter0.3                              primary   117.19  dec   117.23  aug   118.91  unseen   132.26  mape 0.0491  n_est [278, 4439]  (30s)
+M1_huber_filterNone                          primary   112.46  dec   112.60  aug   117.36  unseen   128.35  mape 0.0476  n_est [742, 1373]  (13s)
+M1_huber_filter0.5                           primary   112.09  dec   112.21  aug   117.68  unseen   128.01  mape 0.0474  n_est [758, 2220]  (16s)
+M1_huber_filter0.3                           primary   112.09  dec   112.21  aug   117.68  unseen   128.01  mape 0.0474  n_est [758, 2220]  (17s)
    best LightGBM variant: M1_huber_filter0.5
 == Stage 3: feature ablations (quote_signal, DOW, coordinates, weight handling)
-M1_huber_filter0.5+qs_raw                    primary   108.55  dec   176.91  aug   137.16  unseen   122.21  mape 0.0468  n_est [4789, 751]  (31s)
-   -> reject M1_huber_filter0.5+qs_raw vs M1_huber_filter0.5: primary -3.16%, secondary_ok=False
-M1_huber_filter0.5+qs_aligned                primary   117.02  dec   156.49  aug   154.46  unseen   127.87  mape 0.0500  n_est [786, 991]  (14s)
-   -> reject M1_huber_filter0.5+qs_aligned vs M1_huber_filter0.5: primary +4.40%, secondary_ok=False
-M1_huber_filter0.5+no_dow                    primary   110.40  dec   110.45  aug   112.17  unseen   126.23  mape 0.0468  n_est [1065, 1714]  (18s)
-   -> ADOPT M1_huber_filter0.5+no_dow vs M1_huber_filter0.5: primary -1.51%, secondary_ok=True
-M1_huber_filter0.5+no_dow+no_coords          primary   123.70  dec   123.58  aug   122.11  unseen   133.25  mape 0.0537  n_est [926, 923]  (12s)
-   -> reject M1_huber_filter0.5+no_dow+no_coords vs M1_huber_filter0.5+no_dow: primary +12.04%, secondary_ok=False
-M1_huber_filter0.5+no_dow+weight_neg_nan     primary   110.63  dec   110.73  aug   112.21  unseen   126.42  mape 0.0469  n_est [1020, 1879]  (18s)
-   -> reject M1_huber_filter0.5+no_dow+weight_neg_nan vs M1_huber_filter0.5+no_dow: primary +0.21%, secondary_ok=True
-M1_huber_filter0.5+no_dow+at_cap             primary   110.49  dec   110.55  aug   112.14  unseen   126.62  mape 0.0469  n_est [993, 1862]  (17s)
-   -> reject M1_huber_filter0.5+no_dow+at_cap vs M1_huber_filter0.5+no_dow: primary +0.09%, secondary_ok=True
+M1_huber_filter0.5+qs_raw                    primary   108.54  dec   177.03  aug   137.16  unseen   122.17  mape 0.0468  n_est [3961, 751]  (24s)
+   -> reject M1_huber_filter0.5+qs_raw vs M1_huber_filter0.5: primary -3.17%, secondary_ok=False
+M1_huber_filter0.5+qs_aligned                primary   117.39  dec   157.41  aug   155.70  unseen   128.22  mape 0.0502  n_est [764, 911]  (12s)
+   -> reject M1_huber_filter0.5+qs_aligned vs M1_huber_filter0.5: primary +4.73%, secondary_ok=False
+M1_huber_filter0.5+no_dow                    primary   110.36  dec   110.43  aug   112.20  unseen   126.23  mape 0.0468  n_est [1093, 1861]  (16s)
+   -> ADOPT M1_huber_filter0.5+no_dow vs M1_huber_filter0.5: primary -1.55%, secondary_ok=True
+M1_huber_filter0.5+no_dow+no_coords          primary   123.69  dec   123.58  aug   122.11  unseen   133.24  mape 0.0537  n_est [929, 923]  (9s)
+   -> reject M1_huber_filter0.5+no_dow+no_coords vs M1_huber_filter0.5+no_dow: primary +12.08%, secondary_ok=False
+M1_huber_filter0.5+no_dow+weight_neg_nan     primary   110.57  dec   110.65  aug   112.22  unseen   126.35  mape 0.0468  n_est [1111, 1685]  (15s)
+   -> reject M1_huber_filter0.5+no_dow+weight_neg_nan vs M1_huber_filter0.5+no_dow: primary +0.19%, secondary_ok=True
+M1_huber_filter0.5+no_dow+at_cap             primary   110.42  dec   110.47  aug   112.14  unseen   126.61  mape 0.0468  n_est [1042, 1862]  (16s)
+   -> reject M1_huber_filter0.5+no_dow+at_cap vs M1_huber_filter0.5+no_dow: primary +0.05%, secondary_ok=True
 == Stage 4: hyper-parameters (small grid)
-M1_huber_filter0.5+no_dow+nl15_mcs20         primary   110.48  dec   110.62  aug   112.30  unseen   125.58  mape 0.0468  n_est [1088, 2205]  (15s)
-M1_huber_filter0.5+no_dow+nl15_mcs100        primary   109.54  dec   109.61  aug   112.51  unseen   126.14  mape 0.0465  n_est [3918, 4980]  (2806s)
-M1_huber_filter0.5+no_dow+nl63_mcs20         primary   111.12  dec   111.19  aug   112.53  unseen   127.00  mape 0.0471  n_est [910, 1200]  (20s)
-M1_huber_filter0.5+no_dow+nl63_mcs100        primary   111.45  dec   111.45  aug   113.57  unseen   127.63  mape 0.0472  n_est [3931, 4980]  (105s)
-M1_huber_filter0.5+no_dow+nl127_mcs20        primary   111.96  dec   111.95  aug   113.07  unseen   127.54  mape 0.0473  n_est [909, 1073]  (27s)
-M1_huber_filter0.5+no_dow+nl127_mcs100       primary   111.92  dec   111.92  aug   114.10  unseen   127.70  mape 0.0475  n_est [3069, 3656]  (103s)
-   -> ADOPT M1_huber_filter0.5+no_dow+nl15_mcs100 vs M1_huber_filter0.5+no_dow: primary -0.78%, secondary_ok=True
-M1_huber_filter0.5+no_dow+nl15_mcs100+ff0.7  primary   109.93  dec   109.83  aug   112.38  unseen   127.75  mape 0.0467  n_est [4570, 4943]  (39s)
-   -> reject M1_huber_filter0.5+no_dow+nl15_mcs100+ff0.7 vs M1_huber_filter0.5+no_dow+nl15_mcs100: primary +0.36%, secondary_ok=True
+M1_huber_filter0.5+no_dow+nl15_mcs20         primary   110.28  dec   110.42  aug   112.22  unseen   125.62  mape 0.0467  n_est [1192, 2862]  (15s)
+M1_huber_filter0.5+no_dow+nl15_mcs100        primary   109.56  dec   109.62  aug   112.53  unseen   126.09  mape 0.0465  n_est [4517, 4268]  (33s)
+M1_huber_filter0.5+no_dow+nl63_mcs20         primary   111.10  dec   111.20  aug   112.58  unseen   127.16  mape 0.0470  n_est [964, 1552]  (20s)
+M1_huber_filter0.5+no_dow+nl63_mcs100        primary   111.35  dec   111.37  aug   113.39  unseen   127.54  mape 0.0472  n_est [3990, 4268]  (81s)
+M1_huber_filter0.5+no_dow+nl127_mcs20        primary   111.99  dec   111.98  aug   113.09  unseen   127.54  mape 0.0473  n_est [982, 1091]  (26s)
+M1_huber_filter0.5+no_dow+nl127_mcs100       primary   112.04  dec   112.04  aug   114.29  unseen   127.78  mape 0.0475  n_est [3014, 4177]  (107s)
+   -> ADOPT M1_huber_filter0.5+no_dow+nl15_mcs100 vs M1_huber_filter0.5+no_dow: primary -0.73%, secondary_ok=True
+M1_huber_filter0.5+no_dow+nl15_mcs100+ff0.7  primary   109.92  dec   109.82  aug   112.35  unseen   127.74  mape 0.0467  n_est [4540, 4888]  (35s)
+   -> reject M1_huber_filter0.5+no_dow+nl15_mcs100+ff0.7 vs M1_huber_filter0.5+no_dow+nl15_mcs100: primary +0.33%, secondary_ok=True
 == Stage 5: back-transform and blending
-M1_huber_filter0.5+no_dow+nl15_mcs100+smear  primary   109.25  dec   109.32  aug   112.15  unseen   125.87  mape 0.0464  n_est [3918, 4980]  (36s)
-   -> reject M1_huber_filter0.5+no_dow+nl15_mcs100+smear vs M1_huber_filter0.5+no_dow+nl15_mcs100: primary -0.26%, secondary_ok=True
-blend_w0.25                                  primary   114.44  dec   114.63  aug   118.23  unseen   124.64  mape 0.0492  n_est [3918, 4980]  (39s)
-blend_w0.5                                   primary   110.54  dec   110.64  aug   114.81  unseen   122.94  mape 0.0471  n_est [3918, 4980]  (39s)
-blend_w0.75                                  primary   108.85  dec   108.95  aug   112.96  unseen   123.38  mape 0.0462  n_est [3918, 4980]  (39s)
-   -> ADOPT blend_w0.75 vs M1_huber_filter0.5+no_dow+nl15_mcs100: primary -0.63%, secondary_ok=True
+M1_huber_filter0.5+no_dow+nl15_mcs100+smear  primary   109.28  dec   109.34  aug   112.14  unseen   125.82  mape 0.0464  n_est [4517, 4268]  (33s)
+   -> reject M1_huber_filter0.5+no_dow+nl15_mcs100+smear vs M1_huber_filter0.5+no_dow+nl15_mcs100: primary -0.25%, secondary_ok=True
+blend_w0.25                                  primary   114.44  dec   114.62  aug   118.25  unseen   124.63  mape 0.0492  n_est [4517, 4268]  (34s)
+blend_w0.5                                   primary   110.54  dec   110.64  aug   114.83  unseen   122.90  mape 0.0471  n_est [4517, 4268]  (34s)
+blend_w0.75                                  primary   108.85  dec   108.93  aug   112.99  unseen   123.34  mape 0.0462  n_est [4517, 4268]  (34s)
+   -> ADOPT blend_w0.75 vs M1_huber_filter0.5+no_dow+nl15_mcs100: primary -0.64%, secondary_ok=True
 
 SELECTED: blend_w0.75

@@ -20,7 +20,9 @@ def load(name: str) -> dict:
 
 
 eda, dev, dev2 = load("eda.json"), load("dev_results.json"), load("dev_results_v2.json")
-fin, fin1, drift, pred = load("final_eval.json"), load("final_eval_v1.json"), load("drift_diagnosis.json"), load("predictions_summary.json")
+fin, drift, pred = load("final_eval.json"), load("drift_diagnosis.json"), load("predictions_summary.json")
+hist = load("history/evaluation_history.json")
+prefix = load("history/prefix_final_eval.json")
 DEV = dev["results"]
 DEV2 = dev2["results"]
 SEL = fin["selected"]
@@ -99,8 +101,8 @@ bullet(f" The development data covers {tr['date_min']} to {tr['date_max']}; the 
        f"{va['date_min']} to {va['date_max']}. All validation is therefore time-ordered (expanding window), never a random split.",
        "Out-of-time problem.")
 bullet(" Model choices were made on two development folds only (D1: Jan-Apr -> May-Jun; D2: Jan-Jun -> Jul-Aug), using a "
-       "selection metric fixed before any results were seen: all-row dollar MAE. September-October was held out from all "
-       "fitting and tuning and evaluated once.", "Pre-declared selection.")
+       "selection metric fixed before any results were seen: all-row dollar MAE. September-October was held out from model "
+       "fitting and selection; Section 3 states exactly how and when it was looked at.", "Pre-declared selection.")
 bullet(f" A 0.75/0.25 geometric blend of a LightGBM model (Huber loss on log rate, large-residual rows filtered from "
        f"training) and a log-linear regression. Dev-fold MAE {money(dsum['primary_mae'])} vs {money(DEV['B0_lane_median']['summary']['primary_mae'])} "
        f"for a lane-median baseline.", "Selected model.")
@@ -146,7 +148,9 @@ para("The task is a forecast: train on Jan-Oct 2025, predict Nov-Dec 2025. A ran
 figure(C.FIGURES / "split_design.png", "Figure 3. Development folds, held-out evaluation and the production fit.")
 bullet(" D1 (Jan-Apr -> May-Jun) and D2 (Jan-Jun -> Jul-Aug) are the only data used for tuning, feature selection, outlier "
        "rules, early stopping and blending. Each fold mimics the real two-month horizon. Early stopping uses the last month "
-       "of each fold's own training window; the frozen tree count is the mean of the dev folds' early-stopped counts.",
+       "of each fold's own training window: raw rows are split first, preprocessing and the outlier filter are fitted on the "
+       "earlier months only, and every early-stopping row is kept. The frozen tree count is the mean of the dev folds' "
+       "early-stopped counts.",
        "Development folds.")
 bullet(" Primary: all-row dollar MAE in full-feature mode, mean of D1 and D2 (predictions back-transformed from log space). "
        "A more complex option is adopted only if it lowers the primary metric by more than 0.3% without worsening any "
@@ -160,11 +164,21 @@ bullet(" The December chart file lacks coordinates, market_index and quote_signa
        "supplied feature rows (unknown city = error), market_index as the per-date mean of the period's feature values, "
        "quote_signal absent. The held-out target is never passed to this reconstruction (unit-tested).", "December-mode evaluation.")
 bullet(" Imputation statistics, outlier filtering, trend estimates and early stopping are all fitted inside each training "
-       "fold through a single fit/transform pipeline.", "Fold hygiene.")
-bullet(" Sep-Oct was excluded from all fitting and tuning, and the pipeline was committed to git before it was evaluated "
-       "(the evaluation script refuses to run otherwise). Its labels were, however, looked at during EDA, so it is a held-out "
-       "period examined during EDA, not untouched data. Spotter's Nov-Dec labels are the only truly external test.",
+       "fold through a single fit/transform pipeline. The outlier filter drops training rows whose out-of-fold residual "
+       "(5 date-grouped folds, trimmed least squares on log rate) exceeds e^0.5; evaluation rows are never filtered.", "Fold hygiene.")
+bullet(" Sep-Oct labels were looked at during EDA, and Sep-Oct was never used to fit or select a model. The evaluation "
+       "script refuses to run unless the frozen pipeline is committed. Spotter's Nov-Dec labels are the only truly external test.",
        "Status of Sep-Oct.")
+para("The sequence of events, recorded in reports/history/:", "Evaluation history. ")
+bullet(f" Round-1 selection on the dev folds, frozen and committed, then evaluated on Sep-Oct: MAE "
+       f"{money(prefix['selected']['full']['mae'])}.", "1.")
+bullet(" After seeing that result (a systematic under-prediction), exploratory experiments were run on the dev folds only "
+       "(linear trend, recency weighting). Neither met the adoption rule, so the pipeline was unchanged. From this point on, "
+       "Sep-Oct is not independent evidence.", "2.")
+bullet(" A code review found that early stopping was contaminated: preprocessing and the outlier filter had been fitted on "
+       "the whole training window, including the early-stopping month, and early-stopping rows were filtered. The filter "
+       "also used in-sample residuals. This was fixed, and round-1 selection, round 2, the freeze and the Sep-Oct evaluation "
+       "were all re-run with unchanged rules. The numbers in this report are from the corrected run.", "3.")
 
 doc.add_heading("4. Development results (dev folds only)", 1)
 rows = []
@@ -211,7 +225,7 @@ para("Raw quote_signal helps in months where its regime matches training, but is
      "depends on it collapses when the signal is absent, as it is in the December chart file. A label-free regime-aware "
      "variant did not help either. quote_signal is excluded from the final model.")
 
-doc.add_heading("6. Held-out evaluation (Sep-Oct, run once)", 1)
+doc.add_heading("6. Held-out evaluation (Sep-Oct)", 1)
 table(["Metric (all rows)", "Selected blend", "Lane-median ref.", "Log-linear ref."], [
     ["MAE", money(SEL["full"]["mae"]), money(lane["full"]["mae"]), money(lin["full"]["mae"])],
     ["MAE, December mode", money(SEL["december_mode"]["mae"]), money(lane["december_mode"]["mae"]), money(lin["december_mode"]["mae"])],
@@ -248,7 +262,8 @@ para(f"Median log(actual/predicted) by horizon (table above): the model systemat
      f"{drift['daily_mi_elasticity_by_period']['Jul-Aug']:.2f} in Jul-Aug, {drift['daily_mi_elasticity_by_period']['Sep-Oct']:.2f} in Sep-Oct). Either reading "
      "implies the same failure: the model expects low-index days to be cheaper than they now are.", "Diagnosis. ")
 t2 = DEV2
-para(f"A second development round was run on D1/D2 only, under the same rules. A fold-fitted linear trend was rejected "
+para(f"Prompted by the under-prediction (so Sep-Oct is not independent evidence for this step), a second development "
+     f"round was run on D1/D2 only, under the same rules. A fold-fitted linear trend was rejected "
      f"(dev MAE {money(t2['v1+trend']['summary']['primary_mae'])} vs {money(t2['v1_blend_w0.75']['summary']['primary_mae'])}): "
      f"slopes estimated from 4-6 months are unstable and over-extrapolate. Recency-weighted training (60-day half-life) "
      f"gave {money(t2['v1_blend_w0.75+halflife60']['summary']['primary_mae'])}, below the adoption threshold. "
@@ -267,21 +282,22 @@ para(f"The December inputs fix everything except the date. The missing columns a
      f"coordinates from the city lookup, market_index from the validation file's per-date mean, and no quote_signal. "
      f"Rebuilding them this way costs about nothing on held-out data (MAE {money(SEL['december_mode']['mae'])} vs {money(SEL['full']['mae'])}).")
 para(f"Predictions range from {money(pred['december_range'][0])} to {money(pred['december_range'][1])}. The day-to-day movement comes "
-     f"entirely from market_index (correlation {pred['corr_pred_vs_market_index']:.2f}). With market_index held at its December "
-     f"average, the line is flat at {money(pred['december_range_mi_constant'][0])}-{money(pred['december_range_mi_constant'][1])}. "
+     f"mostly from market_index (correlation {pred['corr_pred_vs_market_index']:.2f}). With market_index held at its December "
+     f"average, the line is nearly flat ({money(pred['december_range_mi_constant'][0])}-{money(pred['december_range_mi_constant'][1])}); "
+     f"the small remaining variation comes from the day-of-week terms in the log-linear component. "
      f"The weekly peaks are midweek days with high market_index (e.g. {d[24]['date']}, a {d[24]['dow']}, index {d[24]['market_index_used']:.3f}). "
      f"For context, the {eda['lexington_fort_wayne_dry_van']['n']} historical Dry Van loads on this lane ranged "
      f"{money(eda['lexington_fort_wayne_dry_van']['min'])}-{money(eda['lexington_fort_wayne_dry_van']['max'])} "
      f"(median {money(eda['lexington_fort_wayne_dry_van']['median'])}) with varying weights, distances and dates.")
-para("The model has never seen a December, so it cannot represent holiday or year-end effects. The weekly shape follows "
-     "the daily market_index, not a calendar effect. Given the drift in Section 6, the overall December level is more "
+para("The model has never seen a December, so it cannot represent holiday or year-end effects. The weekly shape mostly "
+     "follows the daily market_index rather than a learned calendar effect. Given the drift in Section 6, the overall December level is more "
      "likely to be too low than too high.")
 
 doc.add_heading("8. Limitations and next steps", 1)
 for t in [
     "Level drift: the main weakness. With more history (or an external rate index), a dampened or seasonal level component could be validated over several cycles instead of one year.",
     "Quarter-end bumps (Mar, Jun, Sep) appear in the residuals, but three occurrences are too few to model responsibly; December, as a quarter- and year-end month, may carry one.",
-    "Extreme labels (~1.4%) dominate dollar RMSE and a large share of MAE. If Spotter's metric is MAE or RMSE on raw labels, these rows set a floor no model can remove.",
+    "Extreme labels (~1.4% of rows) account for a large share of dollar MAE and most of the RMSE. Large residuals alone do not show whether they are recording errors or genuinely unusual loads that better features could explain.",
     "quote_signal is excluded because of unstable regimes. If its generating process were documented, a regime-aware use might recover the gains seen in matching months.",
     "Cold-start loads rely on coordinates and distance; unseen-city MAE is higher than seen-city MAE.",
 ]:

@@ -61,9 +61,11 @@ pipeline:
         bagging_fraction: 0.8
         bagging_freq: 1
         lambda_l2: 0.0
-        n_estimators: 4449
+        n_estimators: 4392
         max_rounds: 5000
       blend: null
+      trend: false
+      half_life_days: null
     linear:
       model: linear
       weight_negative: abs
@@ -90,25 +92,29 @@ pipeline:
         n_estimators: early_stop
         max_rounds: 5000
       blend: null
+      trend: false
+      half_life_days: null
+  trend: false
+  half_life_days: null
 reference_baselines:
 - B0_lane_median
 - B1_loglinear_ols_filter0.5
 dev_summary:
-  primary_mae: 108.84605209856062
-  december_mode_mae: 108.94727746031472
-  worst_fold_mae: 113.74555433028637
-  aug_mae: 112.96230119295224
-  unseen_mae: 123.38478468683914
-  seen_mae: 107.4205606949613
+  primary_mae: 108.85286496519825
+  december_mode_mae: 108.93263845974012
+  worst_fold_mae: 113.71294291681775
+  aug_mae: 112.98586925620738
+  unseen_mae: 123.3397335491401
+  seen_mae: 107.40108002117175
   exposure: 0.12313190462361304
-  rmse: 630.4657187114839
-  mape: 0.046181269185507974
-  median_ape: 0.0203740334626919
+  rmse: 630.4830224058195
+  mape: 0.046176584732180996
+  median_ape: 0.020353832044390306
   n_estimators:
-  - 3918
-  - 4980
+  - 4517
+  - 4268
   n_filtered:
   - 275
   - 400
-  D1_mae: 113.74555433028637
-  D2_mae: 103.94654986683487
+  D1_mae: 113.71294291681775
+  D2_mae: 103.99278701357876

@@ -1,10 +1,10 @@
 """Development round 2 (dev folds D1/D2 ONLY, same pre-declared rules as develop.py).
 
-Why a second round: the v1 frozen pipeline under-predicted the held-out Sep-Oct period by ~4-5%.
+Why a second round: the first frozen pipeline under-predicted Sep-Oct by ~4-5% (original run).
 Diagnosis showed an upward rate-level drift (~+0.65%/month beyond market_index) that tree models
-cannot extrapolate. The same drift is visible in the dev folds (+2.6-3% bias two months ahead),
-but round 1 never offered a trend candidate. This round adds fold-fitted detrending as a candidate
-and re-selects using D1/D2 only. Sep-Oct is consequently NOT independent evidence for v2.
+cannot extrapolate; the same drift shows as a growing bias in the dev folds. Round 1 never offered
+a trend candidate, so this round adds fold-fitted detrending and recency weighting and re-selects
+on D1/D2 only. Because Sep-Oct prompted it, Sep-Oct is NOT independent evidence for this round.
 """
 from __future__ import annotations
 

@@ -11,6 +11,7 @@ import lightgbm as lgb
 import numpy as np
 import pandas as pd
 from sklearn.linear_model import HuberRegressor, LinearRegression
+from sklearn.model_selection import GroupKFold
 from sklearn.preprocessing import StandardScaler
 
 from . import config as C
@@ -77,14 +78,68 @@ class Pipeline:
 
     # ---- helpers -------------------------------------------------------------------------
     def _robust_filter_mask(self, tr: pd.DataFrame, ylog: np.ndarray) -> np.ndarray:
+        """Flag rows whose OUT-OF-FOLD residual from a robust linear fit exceeds the threshold.
+
+        5 folds grouped by date (a date's loads share market_index). The robust fit is trimmed OLS:
+        fit, drop |resid| > threshold, refit. Only the rows passed in are used.
+        """
         thr = self.cfg["filter_threshold"]
         if thr is None:
             return np.ones(len(tr), dtype=bool)
-        X = linear_matrix(tr, {})
-        sc = StandardScaler().fit(X)
-        hub = HuberRegressor(epsilon=1.35, alpha=0.0, max_iter=1000).fit(sc.transform(X), ylog)
-        resid = ylog - hub.predict(sc.transform(X))
-        return np.abs(resid) <= thr
+        return np.abs(self._oof_residuals(tr, ylog, thr)) <= thr
+
+    @staticmethod
+    def _oof_residuals(tr: pd.DataFrame, ylog: np.ndarray, thr: float) -> np.ndarray:
+        X = linear_matrix(tr, {}).assign(const=1.0).values
+        resid = np.zeros(len(tr))
+        for fit_idx, oof_idx in GroupKFold(n_splits=5).split(X, ylog, groups=tr["date"].values):
+            beta = np.linalg.lstsq(X[fit_idx], ylog[fit_idx], rcond=None)[0]
+            ok = np.abs(ylog[fit_idx] - X[fit_idx] @ beta) <= thr
+            beta = np.linalg.lstsq(X[fit_idx][ok], ylog[fit_idx][ok], rcond=None)[0]
+            resid[oof_idx] = ylog[oof_idx] - X[oof_idx] @ beta
+        return resid
+
+    def _prepare(self, train: pd.DataFrame):
+        """Fit preprocessing, outlier filter, trend and recency weights on exactly `train`."""
+        prep = Preprocessor(self.cfg["weight_negative"]).fit(train)
+        tr = prep.transform(train)
+        ylog = np.log(train[C.TARGET].values.astype(float))
+        keep = self._robust_filter_mask(tr, ylog)
+        tr, ylog = tr[keep], ylog[keep]
+        # Optional: a robust linear time trend removed before fitting, added back in predict().
+        trend = 0.0
+        if self.cfg.get("trend"):
+            X = linear_matrix(tr, {}).assign(months=months_since_origin(tr))
+            sc = StandardScaler().fit(X)
+            hub = HuberRegressor(epsilon=1.35, alpha=0.0, max_iter=1000).fit(sc.transform(X), ylog)
+            j = list(X.columns).index("months")
+            trend = float(hub.coef_[j] / sc.scale_[j])
+            ylog = ylog - trend * months_since_origin(tr)
+        sw = None
+        if self.cfg.get("half_life_days"):
+            age = (tr["date"].max() - tr["date"]).dt.days.values
+            sw = 0.5 ** (age / self.cfg["half_life_days"])
+        return prep, tr, ylog, sw, trend, int((~keep).sum())
+
+    def _early_stop_rounds(self, train: pd.DataFrame) -> int:
+        """Choose the tree count on the last month of `train`, without that month leaking.
+
+        Raw rows are split FIRST. Preprocessing, filtering and trend are fitted on the inner
+        months only; every early-stopping row is kept (none filtered).
+        """
+        month = train["date"].dt.to_period("M")
+        inner_raw, es_raw = train[month < month.max()], train[month == month.max()]
+        prep, tr, ylog, sw, trend, _ = self._prepare(inner_raw)
+        X = tree_matrix(tr, self.cfg["features"])
+        es = prep.transform(es_raw.drop(columns=[C.TARGET]))
+        X_es = tree_matrix(es, self.cfg["features"])[list(X.columns)]
+        y_es = np.log(es_raw[C.TARGET].values.astype(float)) - trend * months_since_origin(es)
+        self.es_rows_ = int(len(es_raw))
+        dtr = lgb.Dataset(X, ylog, weight=sw, categorical_feature=["equipment"], free_raw_data=False)
+        dva = lgb.Dataset(X_es, y_es, categorical_feature=["equipment"], reference=dtr)
+        booster = lgb.train(self._lgbm_params(), dtr, num_boost_round=self.cfg["lgbm"]["max_rounds"],
+                            valid_sets=[dva], callbacks=[lgb.early_stopping(200, verbose=False)])
+        return int(booster.best_iteration)
 
     def _fit_linear(self, tr: pd.DataFrame, ylog: np.ndarray, sw=None) -> None:
         X = linear_matrix(tr, self.cfg["features"])
@@ -110,24 +165,12 @@ class Pipeline:
             params["alpha"] = p["alpha"]
         return params
 
-    def _fit_lgbm(self, tr: pd.DataFrame, ylog: np.ndarray, n_estimators=None, sw=None) -> None:
-        sw = np.ones(len(tr)) if sw is None else sw
+    def _fit_lgbm(self, tr: pd.DataFrame, ylog: np.ndarray, n: int, sw=None) -> None:
         X = tree_matrix(tr, self.cfg["features"])
         self.tree_cols_ = list(X.columns)
-        params = self._lgbm_params()
-        n = n_estimators if n_estimators is not None else self.cfg["lgbm"]["n_estimators"]
-        if n == "early_stop":
-            # Inner time split: the last month of THIS training window is the early-stopping set.
-            last_month = tr["date"].dt.to_period("M").max()
-            inner = (tr["date"].dt.to_period("M") < last_month).values
-            dtr = lgb.Dataset(X[inner], ylog[inner], weight=sw[inner], categorical_feature=["equipment"],
-                              free_raw_data=False)
-            dva = lgb.Dataset(X[~inner], ylog[~inner], categorical_feature=["equipment"], reference=dtr)
-            booster = lgb.train(params, dtr, num_boost_round=self.cfg["lgbm"]["max_rounds"], valid_sets=[dva],
-                                callbacks=[lgb.early_stopping(200, verbose=False)])
-            n = int(booster.best_iteration)
         self.n_estimators_ = int(n)
-        self.booster_ = lgb.train(params, lgb.Dataset(X, ylog, weight=sw, categorical_feature=["equipment"]),
+        self.booster_ = lgb.train(self._lgbm_params(),
+                                  lgb.Dataset(X, ylog, weight=sw, categorical_feature=["equipment"]),
                                   num_boost_round=self.n_estimators_)
 
     def _log_pred(self, df: pd.DataFrame) -> np.ndarray:
@@ -147,36 +190,22 @@ class Pipeline:
             self.parts_ = [Pipeline(b["lgbm"]).fit(train, n_estimators), Pipeline(b["linear"]).fit(train)]
             self.n_estimators_ = self.parts_[0].n_estimators_
             return self
-        self.prep_ = Preprocessor(self.cfg["weight_negative"]).fit(train)
-        tr = self.prep_.transform(train)
-        y = train[C.TARGET].values.astype(float)
         if m == "lane":
-            self.lane_ = LaneMedian().fit(tr, y)
+            self.prep_ = Preprocessor(self.cfg["weight_negative"]).fit(train)
+            self.lane_ = LaneMedian().fit(self.prep_.transform(train), train[C.TARGET].values.astype(float))
             self.n_estimators_ = None
             return self
-        ylog = np.log(y)
-        keep = self._robust_filter_mask(tr, ylog)
-        self.n_filtered_ = int((~keep).sum())
-        tr, ylog = tr[keep], ylog[keep]
-        # Rate level drifts upward over time beyond market_index; trees cannot extrapolate a level
-        # drift, so a robust linear trend (fitted on this training fold only) is removed here and
-        # added back in predict().
-        self.trend_ = 0.0
-        if self.cfg.get("trend"):
-            X = linear_matrix(tr, {}).assign(months=months_since_origin(tr))
-            sc = StandardScaler().fit(X)
-            hub = HuberRegressor(epsilon=1.35, alpha=0.0, max_iter=1000).fit(sc.transform(X), ylog)
-            self.trend_ = float(hub.coef_[list(X.columns).index("months")] / sc.scale_[list(X.columns).index("months")])
-            ylog = ylog - self.trend_ * months_since_origin(tr)
-        sw = None
-        if self.cfg.get("half_life_days"):
-            age = (tr["date"].max() - tr["date"]).dt.days.values
-            sw = 0.5 ** (age / self.cfg["half_life_days"])
+        n = None
+        if m == "lgbm":
+            n = n_estimators if n_estimators is not None else self.cfg["lgbm"]["n_estimators"]
+            if n == "early_stop":
+                n = self._early_stop_rounds(train)
+        self.prep_, tr, ylog, sw, self.trend_, self.n_filtered_ = self._prepare(train)
         if m == "linear":
             self._fit_linear(tr, ylog, sw)
             self.n_estimators_ = None
         elif m == "lgbm":
-            self._fit_lgbm(tr, ylog, n_estimators, sw)
+            self._fit_lgbm(tr, ylog, n, sw)
         else:
             raise ValueError(m)
         resid = ylog - self._log_pred(tr)

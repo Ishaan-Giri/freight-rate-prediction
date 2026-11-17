@@ -1,7 +1,8 @@
-"""One-shot evaluation of the FROZEN pipeline on the held-out period (train Jan-Aug -> test Sep-Oct).
+"""Evaluation of the FROZEN pipeline on the held-out period (train Jan-Aug -> test Sep-Oct).
 
-Sep-Oct was excluded from all fitting, tuning and selection, but its labels were examined during
-EDA, so it is reported as a "held-out period examined during EDA", not untouched data.
+Sep-Oct is never used to fit or select a model, but it is not untouched data: its labels were
+examined during EDA, and an earlier evaluation of it prompted exploratory dev-fold experiments.
+See reports/history/evaluation_history.json for the full sequence.
 Refuses to run unless configs/final.yaml is committed and unmodified.
 """
 from __future__ import annotations
@@ -58,7 +59,8 @@ def main() -> None:
     y = te[C.TARGET].values
 
     out = {"frozen_config_commit": commit, "fold": vars(C.FINAL_FOLD),
-           "status": "held-out period examined during EDA (excluded from fitting/tuning/selection)"}
+           "status": "held-out period: never used for fitting or selection; labels examined during EDA; an earlier "
+                     "evaluation prompted exploratory dev-fold experiments (see reports/history/)"}
     res = evaluate_pipeline(frozen["pipeline"], train, C.FINAL_FOLD, lookup, cold_seeds=C.COLD_START_SEEDS_FINAL,
                             extra_cold_k=C.COLD_START_STRESS_K)
     p = res.pop("_pred_full")
