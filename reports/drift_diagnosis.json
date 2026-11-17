@@ -49,5 +49,11 @@
   "9": 0.0633326870746278,
   "10": 0.057003390647840234
  },
- "log_market_index_coef_with_month_fe": 0.13191451534062434
+ "log_market_index_coef_with_month_fe": 0.13191451534062434,
+ "daily_mi_elasticity_by_period": {
+  "Jan-Mar": 0.21769542477713325,
+  "Apr-Jun": 0.21287999124414506,
+  "Jul-Aug": 0.14789353057162735,
+  "Sep-Oct": 0.06395429223529728
+ }
 }

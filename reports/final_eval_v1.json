@@ -1,5 +1,5 @@
 {
- "frozen_config_commit": "79ef10e840b1eb191a6010e40a652526464d58c9",
+ "frozen_config_commit": "9c917a74797ea870ac787d1a883cf1ef68930f34",
  "fold": {
   "name": "FINAL",
   "train_start": "2025-01-01",
@@ -538,5 +538,6 @@
     "median_ape": 0.04817533275357881
    }
   }
- }
+ },
+ "commit_note": "History was rewritten before publishing to drop a redistributed PDF; original commit 79ef10e840b1eb191a6010e40a652526464d58c9 maps to 9c917a74797ea870ac787d1a883cf1ef68930f34 (identical config content)."
 }

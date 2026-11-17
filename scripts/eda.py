@@ -99,14 +99,15 @@ def main() -> None:
     months = list(range(1, 13))
     vals = [qs_dist.get(m, np.nan) for m in months]
     cols = [ACCENT if m <= 10 else WARN for m in months]
-    ax.bar(months, vals, color=cols)
+    ax.bar(months, vals, color=cols, label="vs distance (features only; label-free)")
     ax.plot(list(qs_rpm.index), qs_rpm.values, "o", color=INK, ms=4, label="vs rate per mile (train only)")
     ax.axhline(0, color=GREY, lw=0.8)
     ax.set_xticks(months, ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"])
     ax.set_ylabel("Spearman correlation")
     ax.set_title("quote_signal flips sign by month; Aug, Nov, Dec show no regime", loc="left")
-    ax.legend(frameon=False, loc="lower left", fontsize=8)
-    ax.text(11.5, 0.85, "validation\n(features only)", ha="center", fontsize=7.5, color=WARN)
+    ax.set_ylim(-1.35, 1.15)
+    ax.legend(frameon=False, loc="lower right", fontsize=7.5)
+    ax.text(11.5, 0.75, "validation\n(features only)", ha="center", fontsize=7.5, color=WARN)
     fig.tight_layout(); fig.savefig(C.FIGURES / "quote_signal_regimes.png"); plt.close(fig)
 
     # 2. market index daily mean
