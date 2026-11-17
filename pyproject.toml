@@ -1,0 +1,12 @@
+[project]
+name = "freight"
+version = "1.0.0"
+description = "Freight rate prediction for the Spotter ML assessment"
+requires-python = ">=3.10"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

@@ -1,0 +1,165 @@
+{
+ "train": {
+  "rows": 48000,
+  "date_min": "2025-01-01",
+  "date_max": "2025-10-31",
+  "weight_missing": 300,
+  "weight_negative": 292,
+  "weight_zero": 0,
+  "weight_at_47500": 1204,
+  "weight_abs_max": 47500.0,
+  "market_index_missing": 374,
+  "cities": 64
+ },
+ "validation": {
+  "rows": 12000,
+  "date_min": "2025-11-01",
+  "date_max": "2025-12-31",
+  "weight_missing": 165,
+  "weight_negative": 145,
+  "weight_zero": 0,
+  "weight_at_47500": 301,
+  "weight_abs_max": 47500.0,
+  "market_index_missing": 249,
+  "cities": 72
+ },
+ "target": {
+  "rate_quantiles": {
+   "0.0": 57.22,
+   "0.01": 327.17,
+   "0.5": 2030.76,
+   "0.99": 5972.83,
+   "1.0": 25533.0
+  },
+  "loglinear_r2": 0.9444278879156184,
+  "large_residual_rows_abs_gt_0.5": 677,
+  "large_residual_share": 0.014104166666666666,
+  "large_residual_by_month": {
+   "1": 81,
+   "2": 57,
+   "3": 71,
+   "4": 66,
+   "5": 62,
+   "6": 63,
+   "7": 65,
+   "8": 68,
+   "9": 64,
+   "10": 80
+  },
+  "ratio_bins_of_large_residuals": {
+   "(-0.001, 0.3]": 189,
+   "(0.3, 0.7]": 148,
+   "(0.7, 1.5]": 0,
+   "(1.5, 3.0]": 103,
+   "(3.0, 7.0]": 237,
+   "(7.0, 100.0]": 0
+  },
+  "clean_residual_std": 0.039409068727859015
+ },
+ "market_index": {
+  "within_day_std": 0.02490847055771538,
+  "across_day_std_of_daily_mean": 0.16516696707244244,
+  "monthly_mean": {
+   "2025-01": 0.9266961122490783,
+   "2025-02": 0.9959967193675889,
+   "2025-03": 1.072879765625,
+   "2025-04": 1.2076491478696743,
+   "2025-05": 1.3014521519507187,
+   "2025-06": 1.280315676017718,
+   "2025-07": 1.2008926579163248,
+   "2025-08": 0.9814802052475666,
+   "2025-09": 0.8930385794352231,
+   "2025-10": 0.9575017418416129,
+   "2025-11": 0.9187161195595175,
+   "2025-12": 0.934689936981758
+  },
+  "daily_mean_by_weekday": {
+   "Friday": 1.1054,
+   "Monday": 0.9691,
+   "Saturday": 1.0153,
+   "Sunday": 0.9576,
+   "Thursday": 1.152,
+   "Tuesday": 1.0427,
+   "Wednesday": 1.1233
+  }
+ },
+ "quote_signal": {
+  "spearman_vs_distance_by_month": {
+   "1": -0.788,
+   "2": -0.777,
+   "3": -0.758,
+   "4": 0.773,
+   "5": 0.789,
+   "6": -0.759,
+   "7": 0.776,
+   "8": 0.018,
+   "9": -0.767,
+   "10": 0.788,
+   "11": 0.018,
+   "12": 0.011
+  },
+  "spearman_vs_rate_per_mile_by_month_train": {
+   "1": 0.963,
+   "2": 0.965,
+   "3": 0.97,
+   "4": -0.963,
+   "5": -0.968,
+   "6": 0.968,
+   "7": -0.965,
+   "8": -0.022,
+   "9": 0.967,
+   "10": -0.959
+  }
+ },
+ "geography": {
+  "lane_distance_to_haversine_ratio_quantiles": {
+   "0.01": 1.146,
+   "0.5": 1.18,
+   "0.99": 1.391
+  },
+  "per_city_median_ratio_min_max": [
+   1.1665893274727521,
+   1.1968551724608765
+  ],
+  "new_orleans_median_ratio": 1.1871239433382526,
+  "most_extreme_lanes": [
+   {
+    "pickup": "Allentown",
+    "delivery": "New York",
+    "ratio": 78.5
+   },
+   {
+    "pickup": "New York",
+    "delivery": "Allentown",
+    "ratio": 78.5
+   },
+   {
+    "pickup": "New Orleans",
+    "delivery": "Shreveport",
+    "ratio": 9.63
+   },
+   {
+    "pickup": "Shreveport",
+    "delivery": "New Orleans",
+    "ratio": 9.63
+   }
+  ],
+  "validation_only_cities": [
+   "Allentown",
+   "Charlotte",
+   "Chicago",
+   "Jackson",
+   "Knoxville",
+   "Laredo",
+   "Norfolk",
+   "San Diego"
+  ],
+  "validation_share_touching_new_cities": 0.12058333333333333
+ },
+ "lexington_fort_wayne_dry_van": {
+  "n": 21,
+  "min": 757.93,
+  "median": 807.89,
+  "max": 934.37
+ }
+}
