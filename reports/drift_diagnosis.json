@@ -4,37 +4,37 @@
    "fold": "D1",
    "month": 5,
    "months_ahead": 1,
-   "median_log_actual_over_pred": 0.005110227766020221
+   "median_log_actual_over_pred": 0.005072366716867393
   },
   {
    "fold": "D1",
    "month": 6,
    "months_ahead": 2,
-   "median_log_actual_over_pred": 0.030130763301415404
+   "median_log_actual_over_pred": 0.03016959954298656
   },
   {
    "fold": "D2",
    "month": 7,
    "months_ahead": 1,
-   "median_log_actual_over_pred": 0.007601241927078333
+   "median_log_actual_over_pred": 0.007571550640291867
   },
   {
    "fold": "D2",
    "month": 8,
    "months_ahead": 2,
-   "median_log_actual_over_pred": 0.02597527779215291
+   "median_log_actual_over_pred": 0.025942240114860182
   },
   {
    "fold": "FINAL",
    "month": 9,
    "months_ahead": 1,
-   "median_log_actual_over_pred": 0.04897324083468339
+   "median_log_actual_over_pred": 0.049017975784675274
   },
   {
    "fold": "FINAL",
    "month": 10,
    "months_ahead": 2,
-   "median_log_actual_over_pred": 0.04178056477064422
+   "median_log_actual_over_pred": 0.04172052001782109
   }
  ],
  "month_fixed_effects_log": {
