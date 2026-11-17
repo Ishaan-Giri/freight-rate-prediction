@@ -35,7 +35,16 @@ def default_config(model: str = "lgbm") -> dict:
         "linear": {"huber": False},
         "lgbm": dict(DEFAULT_LGBM),
         "blend": None,                   # {"w_lgbm": float, "linear": cfg} for model == "blend"
+        "trend": False,                  # fold-fitted linear time trend removed before fitting, added back after
+        "half_life_days": None,          # recency weighting: weight = 0.5 ** (age_days / half_life)
     }
+
+
+TREND_ORIGIN = pd.Timestamp("2025-01-01")
+
+
+def months_since_origin(df: pd.DataFrame) -> np.ndarray:
+    return ((df["date"] - TREND_ORIGIN).dt.days / 30.4).values
 
 
 class LaneMedian:
@@ -77,15 +86,15 @@ class Pipeline:
         resid = ylog - hub.predict(sc.transform(X))
         return np.abs(resid) <= thr
 
-    def _fit_linear(self, tr: pd.DataFrame, ylog: np.ndarray) -> None:
+    def _fit_linear(self, tr: pd.DataFrame, ylog: np.ndarray, sw=None) -> None:
         X = linear_matrix(tr, self.cfg["features"])
         self.lin_cols_ = list(X.columns)
         self.scaler_ = StandardScaler().fit(X)
         Xs = self.scaler_.transform(X)
         if self.cfg["linear"]["huber"]:
-            self.lin_ = HuberRegressor(epsilon=1.35, alpha=0.0, max_iter=1000).fit(Xs, ylog)
+            self.lin_ = HuberRegressor(epsilon=1.35, alpha=0.0, max_iter=1000).fit(Xs, ylog, sample_weight=sw)
         else:
-            self.lin_ = LinearRegression().fit(Xs, ylog)
+            self.lin_ = LinearRegression().fit(Xs, ylog, sample_weight=sw)
 
     def _lgbm_params(self) -> dict:
         p = self.cfg["lgbm"]
@@ -101,7 +110,8 @@ class Pipeline:
             params["alpha"] = p["alpha"]
         return params
 
-    def _fit_lgbm(self, tr: pd.DataFrame, ylog: np.ndarray, n_estimators=None) -> None:
+    def _fit_lgbm(self, tr: pd.DataFrame, ylog: np.ndarray, n_estimators=None, sw=None) -> None:
+        sw = np.ones(len(tr)) if sw is None else sw
         X = tree_matrix(tr, self.cfg["features"])
         self.tree_cols_ = list(X.columns)
         params = self._lgbm_params()
@@ -110,13 +120,14 @@ class Pipeline:
             # Inner time split: the last month of THIS training window is the early-stopping set.
             last_month = tr["date"].dt.to_period("M").max()
             inner = (tr["date"].dt.to_period("M") < last_month).values
-            dtr = lgb.Dataset(X[inner], ylog[inner], categorical_feature=["equipment"], free_raw_data=False)
+            dtr = lgb.Dataset(X[inner], ylog[inner], weight=sw[inner], categorical_feature=["equipment"],
+                              free_raw_data=False)
             dva = lgb.Dataset(X[~inner], ylog[~inner], categorical_feature=["equipment"], reference=dtr)
             booster = lgb.train(params, dtr, num_boost_round=self.cfg["lgbm"]["max_rounds"], valid_sets=[dva],
                                 callbacks=[lgb.early_stopping(200, verbose=False)])
             n = int(booster.best_iteration)
         self.n_estimators_ = int(n)
-        self.booster_ = lgb.train(params, lgb.Dataset(X, ylog, categorical_feature=["equipment"]),
+        self.booster_ = lgb.train(params, lgb.Dataset(X, ylog, weight=sw, categorical_feature=["equipment"]),
                                   num_boost_round=self.n_estimators_)
 
     def _log_pred(self, df: pd.DataFrame) -> np.ndarray:
@@ -147,11 +158,25 @@ class Pipeline:
         keep = self._robust_filter_mask(tr, ylog)
         self.n_filtered_ = int((~keep).sum())
         tr, ylog = tr[keep], ylog[keep]
+        # Rate level drifts upward over time beyond market_index; trees cannot extrapolate a level
+        # drift, so a robust linear trend (fitted on this training fold only) is removed here and
+        # added back in predict().
+        self.trend_ = 0.0
+        if self.cfg.get("trend"):
+            X = linear_matrix(tr, {}).assign(months=months_since_origin(tr))
+            sc = StandardScaler().fit(X)
+            hub = HuberRegressor(epsilon=1.35, alpha=0.0, max_iter=1000).fit(sc.transform(X), ylog)
+            self.trend_ = float(hub.coef_[list(X.columns).index("months")] / sc.scale_[list(X.columns).index("months")])
+            ylog = ylog - self.trend_ * months_since_origin(tr)
+        sw = None
+        if self.cfg.get("half_life_days"):
+            age = (tr["date"].max() - tr["date"]).dt.days.values
+            sw = 0.5 ** (age / self.cfg["half_life_days"])
         if m == "linear":
-            self._fit_linear(tr, ylog)
+            self._fit_linear(tr, ylog, sw)
             self.n_estimators_ = None
         elif m == "lgbm":
-            self._fit_lgbm(tr, ylog, n_estimators)
+            self._fit_lgbm(tr, ylog, n_estimators, sw)
         else:
             raise ValueError(m)
         resid = ylog - self._log_pred(tr)
@@ -168,4 +193,4 @@ class Pipeline:
         df = self.prep_.transform(features)
         if m == "lane":
             return self.lane_.predict_rpm(df) * df["distance"].values
-        return np.exp(self._log_pred(df)) * self.smear_
+        return np.exp(self._log_pred(df) + self.trend_ * months_since_origin(df)) * self.smear_

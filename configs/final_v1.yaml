@@ -1,0 +1,114 @@
+selected_candidate: blend_w0.75
+selection_rule:
+- 'Sep-Oct is never touched here. Selection follows rules declared before running:'
+- ''
+- '  PRIMARY  : all-row dollar MAE, full-feature mode, mean over D1 and D2.'
+- '  ADOPT    : a more complex option is adopted only if it lowers PRIMARY by > 0.3%
+  and does not'
+- '             worsen any secondary check by > 2%: December-mode MAE, August MAE
+  (the quote_signal'
+- '             regime analogue of Nov-Dec), cold-start unseen-city MAE, worst-fold
+  MAE.'
+- '  SIMPLIFY : removing a feature / option is adopted if PRIMARY worsens by <= 0.3%
+  and no secondary'
+pipeline:
+  model: blend
+  weight_negative: abs
+  features:
+    dow: true
+    coords: true
+    qs_raw: false
+    qs_aligned: false
+    at_cap: false
+  filter_threshold: null
+  back_transform: exp
+  linear:
+    huber: false
+  lgbm:
+    objective: l2
+    alpha: 0.9
+    learning_rate: 0.03
+    num_leaves: 31
+    min_child_samples: 20
+    feature_fraction: 0.9
+    bagging_fraction: 0.8
+    bagging_freq: 1
+    lambda_l2: 0.0
+    n_estimators: early_stop
+    max_rounds: 5000
+  blend:
+    w_lgbm: 0.75
+    lgbm:
+      model: lgbm
+      weight_negative: abs
+      features:
+        dow: false
+        coords: true
+        qs_raw: false
+        qs_aligned: false
+        at_cap: false
+      filter_threshold: 0.5
+      back_transform: exp
+      linear:
+        huber: false
+      lgbm:
+        objective: huber
+        alpha: 0.1
+        learning_rate: 0.03
+        num_leaves: 15
+        min_child_samples: 100
+        feature_fraction: 0.9
+        bagging_fraction: 0.8
+        bagging_freq: 1
+        lambda_l2: 0.0
+        n_estimators: 4449
+        max_rounds: 5000
+      blend: null
+    linear:
+      model: linear
+      weight_negative: abs
+      features:
+        dow: true
+        coords: true
+        qs_raw: false
+        qs_aligned: false
+        at_cap: false
+      filter_threshold: 0.5
+      back_transform: exp
+      linear:
+        huber: false
+      lgbm:
+        objective: l2
+        alpha: 0.9
+        learning_rate: 0.03
+        num_leaves: 31
+        min_child_samples: 20
+        feature_fraction: 0.9
+        bagging_fraction: 0.8
+        bagging_freq: 1
+        lambda_l2: 0.0
+        n_estimators: early_stop
+        max_rounds: 5000
+      blend: null
+reference_baselines:
+- B0_lane_median
+- B1_loglinear_ols_filter0.5
+dev_summary:
+  primary_mae: 108.84605209856062
+  december_mode_mae: 108.94727746031472
+  worst_fold_mae: 113.74555433028637
+  aug_mae: 112.96230119295224
+  unseen_mae: 123.38478468683914
+  seen_mae: 107.4205606949613
+  exposure: 0.12313190462361304
+  rmse: 630.4657187114839
+  mape: 0.046181269185507974
+  median_ape: 0.0203740334626919
+  n_estimators:
+  - 3918
+  - 4980
+  n_filtered:
+  - 275
+  - 400
+  D1_mae: 113.74555433028637
+  D2_mae: 103.94654986683487

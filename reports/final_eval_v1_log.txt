@@ -1,0 +1,9 @@
+Selected blend_w0.75 on Sep-Oct (all rows): MAE 163.76  RMSE 649.3  MAPE 0.0694  median APE 0.0443
+December mode: MAE 163.91
+  month 9: full MAE 171.42  Dec-mode MAE 172.01
+  month 10: full MAE 156.40  Dec-mode MAE 156.12
+Cold start k=4: exposure 0.129  unseen MAE 175.13  seen MAE 162.21
+Stress  k=8: exposure 0.221  unseen MAE 179.66  seen MAE 158.87
+Clean subset (supplementary, 0.985 of rows): MAE 108.68
+Reference B0_lane_median: MAE 162.43  Dec-mode 162.43
+Reference B1_loglinear_ols_filter0.5: MAE 173.32  Dec-mode 173.17
