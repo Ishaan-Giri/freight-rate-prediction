@@ -80,6 +80,11 @@ def table(header: list[str], rows: list[list], widths: list[float] | None = None
     if widths:
         for i, col in enumerate(t.columns):
             col.width = Inches(widths[i])
+    if len(t.rows) <= 8:  # keep small tables on one page
+        for row in t.rows[:-1]:
+            for c in row.cells:
+                for p in c.paragraphs:
+                    p.paragraph_format.keep_with_next = True
     doc.add_paragraph().paragraph_format.space_after = Pt(2)
     return t
 
@@ -317,8 +322,8 @@ para(f"Predictions range from {money(pred['december_range'][0])} to {money(pred[
      f"mostly follow the daily market_index (correlation {pred['corr_pred_vs_market_index']:.2f}): with market_index held "
      f"fixed, the line is almost flat ({money(pred['december_range_mi_constant'][0])}-"
      f"{money(pred['december_range_mi_constant'][1])}), and the small leftover movement comes from day-of-week terms in the "
-     f"linear model. The weekly peaks are midweek days with a high market_index (for example {d[24]['date']}, a "
-     f"{d[24]['dow']}). For comparison, the {eda['lexington_fort_wayne_dry_van']['n']} past Dry Van loads on this lane cost "
+     f"linear model. The weekly peaks are midweek days with a high market_index (for example {d[17]['date']}, a "
+     f"{d[17]['dow']}). For comparison, the {eda['lexington_fort_wayne_dry_van']['n']} past Dry Van loads on this lane cost "
      f"{money(eda['lexington_fort_wayne_dry_van']['min'])}-{money(eda['lexington_fort_wayne_dry_van']['max'])} "
      f"(median {money(eda['lexington_fort_wayne_dry_van']['median'])}), with different weights, distances and dates.")
 para("The model has never seen a December, so it cannot know about Christmas or year-end effects. Given the upward "

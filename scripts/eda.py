@@ -99,15 +99,15 @@ def main() -> None:
     months = list(range(1, 13))
     vals = [qs_dist.get(m, np.nan) for m in months]
     cols = [ACCENT if m <= 10 else WARN for m in months]
-    ax.bar(months, vals, color=cols, label="vs distance (features only; label-free)")
-    ax.plot(list(qs_rpm.index), qs_rpm.values, "o", color=INK, ms=4, label="vs rate per mile (train only)")
+    ax.bar(months, vals, color=cols, label="vs distance (no prices needed)")
+    ax.plot(list(qs_rpm.index), qs_rpm.values, "o", color=INK, ms=4, label="vs price per mile (training months)")
     ax.axhline(0, color=GREY, lw=0.8)
     ax.set_xticks(months, ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"])
-    ax.set_ylabel("Spearman correlation")
-    ax.set_title("quote_signal flips sign by month; Aug, Nov, Dec show no regime", loc="left")
-    ax.set_ylim(-1.35, 1.15)
-    ax.legend(frameon=False, loc="lower right", fontsize=7.5)
-    ax.text(11.5, 0.75, "validation\n(features only)", ha="center", fontsize=7.5, color=WARN)
+    ax.set_ylabel("correlation (-1 to +1)")
+    ax.set_title("quote_signal flips direction by month; no pattern in Aug, Nov, Dec", loc="left")
+    ax.set_ylim(-1.6, 1.15)
+    ax.legend(frameon=False, loc="lower center", ncol=2, fontsize=7.5)
+    ax.text(11.5, 0.75, "months we\npredict", ha="center", fontsize=7.5, color=WARN)
     fig.tight_layout(); fig.savefig(C.FIGURES / "quote_signal_regimes.png"); plt.close(fig)
 
     # 2. market index daily mean
@@ -115,9 +115,10 @@ def main() -> None:
     fig, ax = plt.subplots(figsize=(7.2, 2.6), dpi=160)
     for src, c in [("train", ACCENT), ("validation", WARN)]:
         s = daily[daily.src == src]
-        ax.plot(s["date"], s["market_index"], color=c, lw=1, label=src)
-    ax.set_ylabel("daily mean market_index")
-    ax.set_title("market_index is a date-level signal with a weekly cycle", loc="left")
+        ax.plot(s["date"], s["market_index"], color=c, lw=1,
+                label={"train": "training months", "validation": "months we predict"}[src])
+    ax.set_ylabel("market_index (daily average)")
+    ax.set_title("market_index: one value per day, with a weekly up-and-down cycle", loc="left")
     ax.legend(frameon=False, fontsize=8)
     fig.tight_layout(); fig.savefig(C.FIGURES / "market_index_daily.png"); plt.close(fig)
 
@@ -126,8 +127,8 @@ def main() -> None:
     for e, c in zip(C.EQUIPMENT, [ACCENT, WARN, "#6B7280"]):
         s = tr[tr.equipment == e].sample(2500, random_state=0)
         ax.scatter(s["distance"], s["rpm"], s=3, alpha=0.35, color=c, label=e)
-    ax.set_ylim(0, 6); ax.set_xlabel("distance (mi)"); ax.set_ylabel("rate per mile ($)")
-    ax.set_title("Rate per mile falls with distance; equipment shifts the level", loc="left")
+    ax.set_ylim(0, 6); ax.set_xlabel("distance (miles)"); ax.set_ylabel("price per mile ($)")
+    ax.set_title("Price per mile falls with distance; equipment type shifts the level", loc="left")
     ax.legend(frameon=False, fontsize=8, markerscale=4)
     fig.tight_layout(); fig.savefig(C.FIGURES / "rpm_vs_distance.png"); plt.close(fig)
 
