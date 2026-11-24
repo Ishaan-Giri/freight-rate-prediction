@@ -133,18 +133,18 @@ def main() -> None:
 
     # 4. split design
     fig, ax = plt.subplots(figsize=(7.2, 2.0), dpi=160)
-    rows = [("D1 (dev)", "2025-01-01", "2025-05-01", "2025-06-30"),
-            ("D2 (dev)", "2025-01-01", "2025-07-01", "2025-08-31"),
-            ("Held-out eval", "2025-01-01", "2025-09-01", "2025-10-31"),
-            ("Production", "2025-01-01", "2025-11-01", "2025-12-31")]
+    rows = [("Practice split 1", "2025-01-01", "2025-05-01", "2025-06-30"),
+            ("Practice split 2", "2025-01-01", "2025-07-01", "2025-08-31"),
+            ("Final check", "2025-01-01", "2025-09-01", "2025-10-31"),
+            ("Production (predict Nov-Dec)", "2025-01-01", "2025-11-01", "2025-12-31")]
     for i, (lab, a, b, e) in enumerate(rows[::-1]):
         a, b, e = map(pd.Timestamp, (a, b, e))
         ax.barh(i, (b - a).days, left=a, color=ACCENT, height=0.55)
         ax.barh(i, (e - b).days + 1, left=b, color=WARN, height=0.55)
         ax.text(a - pd.Timedelta(days=3), i, lab, ha="right", va="center", fontsize=8)
     ax.set_yticks([]); ax.spines["left"].set_visible(False)
-    ax.set_title("Expanding-window, time-ordered splits (teal = train, orange = evaluate/predict)", loc="left")
-    ax.set_xlim(pd.Timestamp("2024-11-01"), pd.Timestamp("2026-01-05"))
+    ax.set_title("How the data is split (teal = train, orange = test or predict)", loc="left")
+    ax.set_xlim(pd.Timestamp("2024-09-15"), pd.Timestamp("2026-01-05"))
     fig.tight_layout(); fig.savefig(C.FIGURES / "split_design.png"); plt.close(fig)
     print(json.dumps(out, indent=1, default=str)[:3000])
 

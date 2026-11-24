@@ -4,7 +4,7 @@ This repo predicts `posted_rate` for 12,000 Nov–Dec 2025 loads from labeled Ja
 
 **Deliverables**
 - [`validation_predictions.csv`](validation_predictions.csv): `load_id,predicted_rate`, 12,000 rows
-- [`reports/freight_rate_report.docx`](reports/freight_rate_report.docx): validation and split approach, results, December chart
+- [`reports/freight_rate_report.pdf`](reports/freight_rate_report.pdf) (also as [`.docx`](reports/freight_rate_report.docx)): validation and split approach, results, December chart
 - [`scorer_results/candidate_december.png`](scorer_results/candidate_december.png): produced by the provided `score.py`
 
 ## Results at a glance
